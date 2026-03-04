@@ -64,6 +64,13 @@ class NeuraGems:
             active.add("specialGem")
         return active
 
+    def _is_hunt_result(self, content):
+        # Support both old and new hunt output formats.
+        return (
+            ("you found:" in content and "gained" in content)
+            or ("caught" in content and "spent" in content)
+        )
+
     async def startup_inventory_check(self):
         await self.bot.wait_until_ready()
         await asyncio.sleep(4)
@@ -185,7 +192,7 @@ class NeuraGems:
         if not is_for_me:
             return
 
-        if "caught" in content and "spent" in content:
+        if self._is_hunt_result(content):
             enabled_types = set(self._enabled_gem_types())
             if not enabled_types:
                 return
